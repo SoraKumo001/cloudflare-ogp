@@ -8,19 +8,20 @@
 		"start": "wrangler dev"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20240129.0",
-		"@types/emscripten": "^1.39.10",
-		"@types/react": "^18.2.53",
-		"typescript": "^5.3.3",
-		"wrangler": "^3.26.0"
+		"@cloudflare/workers-types": "^4.20250129.0",
+		"@types/emscripten": "^1.40.0",
+		"@types/react": "^19.0.8",
+		"typescript": "^5.7.3",
+		"wrangler": "^3.107.2"
 	},
 	"dependencies": {
 		"@node-libraries/semaphore": "^1.0.3",
 		"@resvg/resvg-wasm": "2.6",
 		"@shuding/opentype.js": "^1.4.0-beta.0",
-		"react": "^18.2.0",
-		"satori": "^0.10.13",
+		"react": "^19.0.0",
+		"satori": "^0.12.1",
 		"svg2png-wasm": "^1.4.1",
+		"wasm-image-optimization": "^1.1.2",
 		"yoga-wasm-web": "^0.3.3"
 	},
 	"main": "index.js",

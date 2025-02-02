@@ -10,7 +10,7 @@ await initialize(wasm);
 type Weight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 type FontStyle = 'normal' | 'italic';
 type FontSrc = { data: ArrayBuffer | string; name: string; weight?: Weight; style?: FontStyle; lang?: string };
-type Font = Omit<FontSrc, 'data'> & { data: ArrayBuffer };
+type Font = Omit<FontSrc, 'data'> & { data: ArrayBuffer | ArrayBufferView };
 
 const downloadFont = async (fontName: string) => {
 	return await fetch(`https://fonts.googleapis.com/css2?family=${encodeURI(fontName)}`)
@@ -72,11 +72,11 @@ const createLoadAdditionalAsset = ({
 	};
 
 	const loadEmoji = async (segment: string): Promise<string | undefined> => {
-		const codes = Array.from(segment).map((char) => char.codePointAt(0)!);
+		const codes = Array.from(segment).map((char) => char.codePointAt(0));
 		const isZero = codes.includes(0x200d);
 		const code = codes
 			.filter((code) => isZero || code !== 0xfe0f)
-			.map((v) => v.toString(16))
+			.map((v) => v?.toString(16))
 			.join('-');
 		return getEmojiSVG(code);
 	};

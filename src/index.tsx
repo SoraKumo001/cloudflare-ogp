@@ -1,9 +1,26 @@
 import React from 'react';
 import { createOGP } from './createOGP';
+import { optimizeImage } from 'wasm-image-optimization';
 
-export interface Env {}
+const convertImage = async (url: string | null) => {
+	const response = url ? await fetch(url) : undefined;
+	if (response) {
+		const contentType = response.headers.get('Content-Type');
+		const imageBuffer = await response.arrayBuffer();
+		if (contentType?.startsWith('image/')) {
+			if (['image/png', 'image/jpeg'].includes(contentType)) {
+				return [contentType, imageBuffer as ArrayBuffer] as const;
+			}
+			const image = await optimizeImage({ image: imageBuffer, format: 'png' });
+			if (image) {
+				return ['image/png', image] as const;
+			}
+		}
+	}
+	return [];
+};
 
-const outputOGP = async (request: Request, env: Env, ctx: ExecutionContext): Promise<Response> => {
+const outputOGP = async (request: Request, _env: object, ctx: ExecutionContext): Promise<Response> => {
 	const url = new URL(request.url);
 	if (url.pathname !== '/') {
 		return new Response(null, { status: 404 });
@@ -12,12 +29,14 @@ const outputOGP = async (request: Request, env: Env, ctx: ExecutionContext): Pro
 	const name = url.searchParams.get('name') ?? 'Name';
 	const title = url.searchParams.get('title') ?? 'Title';
 	const image = url.searchParams.get('image');
-	const cache = caches.default;
+	const cache = await caches.open('cloudflare-ogp');
 	const cacheKey = new Request(url.toString());
 	const cachedResponse = await cache.match(cacheKey);
 	if (cachedResponse) {
 		return cachedResponse;
 	}
+
+	const [imageType, imageBuffer] = await convertImage(image);
 
 	const ogpNode = (
 		<div
@@ -58,7 +77,16 @@ const outputOGP = async (request: Request, env: Env, ctx: ExecutionContext): Pro
 								opacity: 0.4,
 							}}
 							width={480}
-							src={image}
+							height={480}
+							src={
+								imageBuffer
+									? `data:${imageType};base64,${btoa(
+											Array.from(new Uint8Array(imageBuffer))
+												.map((v) => String.fromCharCode(v))
+												.join('')
+									  )}`
+									: undefined
+							}
 							alt=""
 						/>
 					)}
