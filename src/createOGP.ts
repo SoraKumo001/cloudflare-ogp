@@ -1,11 +1,13 @@
 import satori, { init } from 'satori/wasm';
 import initYoga from 'yoga-wasm-web';
 import yogaWasm from 'yoga-wasm-web/dist/yoga.wasm';
-init(await initYoga(yogaWasm));
-
 import { svg2png, initialize } from 'svg2png-wasm';
 import wasm from 'svg2png-wasm/svg2png_wasm_bg.wasm';
+
+init(await initYoga(yogaWasm));
 await initialize(wasm);
+
+const cache = await caches.open('cloudflare-ogp');
 
 type Weight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 type FontStyle = 'normal' | 'italic';
@@ -22,7 +24,6 @@ const downloadFont = async (fontName: string) => {
 };
 
 const getFonts = async (fontList: string[], ctx: ExecutionContext): Promise<Font[]> => {
-	const cache = caches.default;
 	const fonts: Font[] = [];
 	for (const fontName of fontList) {
 		const cacheKey = `http://font/${encodeURI(fontName)}`;
@@ -32,7 +33,6 @@ const getFonts = async (fontList: string[], ctx: ExecutionContext): Promise<Font
 			fonts.push({ name: fontName, data: await response.arrayBuffer(), weight: 400, style: 'normal' });
 		} else {
 			const data = await downloadFont(fontName);
-
 			if (data) {
 				ctx.waitUntil(cache.put(cacheKey, new Response(data)));
 				fonts.push({ name: fontName, data, weight: 400, style: 'normal' });
@@ -53,11 +53,10 @@ const createLoadAdditionalAsset = ({
 	}[];
 }) => {
 	const getEmojiSVG = async (code: string) => {
-		const cache = caches.default;
 		const cacheKey = `http://emoji/${encodeURI(JSON.stringify(emojis))}/${code}`;
 		for (const { url, upper } of emojis) {
 			const emojiURL = `${url}${upper === false ? code.toLocaleLowerCase() : code.toUpperCase()}.svg`;
-			let response = await caches.default.match(cacheKey);
+			let response = await cache.match(cacheKey);
 			if (!response) {
 				response = await fetch(emojiURL);
 				if (response.status === 200) {

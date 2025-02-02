@@ -2,6 +2,8 @@ import React from 'react';
 import { createOGP } from './createOGP';
 import { optimizeImage } from 'wasm-image-optimization';
 
+const cache = await caches.open('cloudflare-ogp');
+
 const convertImage = async (url: string | null) => {
 	const response = url ? await fetch(url) : undefined;
 	if (response) {
@@ -29,7 +31,6 @@ const outputOGP = async (request: Request, _env: object, ctx: ExecutionContext):
 	const name = url.searchParams.get('name') ?? 'Name';
 	const title = url.searchParams.get('title') ?? 'Title';
 	const image = url.searchParams.get('image');
-	const cache = await caches.open('cloudflare-ogp');
 	const cacheKey = new Request(url.toString());
 	const cachedResponse = await cache.match(cacheKey);
 	if (cachedResponse) {
