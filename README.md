@@ -17,4 +17,4 @@
 
 ## customization
 
-You can customise what you see by editing `src/index.tsx`
+You can customize what you see by editing `src/index.tsx`
