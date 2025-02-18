@@ -8,17 +8,16 @@
 		"start": "wrangler dev"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20250129.0",
+		"@cloudflare/workers-types": "^4.20250214.0",
 		"@types/emscripten": "^1.40.0",
-		"@types/react": "^19.0.8",
+		"@types/react": "^19.0.10",
 		"typescript": "^5.7.3",
-		"wrangler": "^3.107.2"
+		"wrangler": "^3.109.1"
 	},
 	"dependencies": {
 		"react": "^19.0.0",
 		"satori": "^0.12.1",
-		"svg2png-wasm": "^1.4.1",
-		"wasm-image-optimization": "^1.1.2",
+		"wasm-image-optimization": "^1.1.5",
 		"yoga-wasm-web": "^0.3.3"
 	},
 	"repository": "https://github.com/SoraKumo001/cloudflare-ogp",

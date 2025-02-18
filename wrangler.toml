@@ -56,3 +56,6 @@ compatibility_flags = ["nodejs_compat"]
 
 [observability.logs]
 enabled = true
+
+[limits]
+cpu_ms = 10000

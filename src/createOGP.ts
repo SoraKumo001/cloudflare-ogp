@@ -1,11 +1,10 @@
 import satori, { init } from 'satori/wasm';
 import initYoga from 'yoga-wasm-web';
 import yogaWasm from 'yoga-wasm-web/dist/yoga.wasm';
-import { svg2png, initialize } from 'svg2png-wasm';
-import wasm from 'svg2png-wasm/svg2png_wasm_bg.wasm';
+import type { JSX } from 'react';
+import { optimizeImage } from 'wasm-image-optimization';
 
 init(await initYoga(yogaWasm));
-await initialize(wasm);
 
 const cache = await caches.open('cloudflare-ogp');
 
@@ -100,7 +99,7 @@ export const createOGP = async (
 		ctx,
 		width,
 		height,
-		scale,
+		scale = 1,
 	}: {
 		ctx: ExecutionContext;
 		fonts: string[];
@@ -120,5 +119,5 @@ export const createOGP = async (
 		fonts: fontList,
 		loadAdditionalAsset: emojis ? createLoadAdditionalAsset({ ctx, emojis }) : undefined,
 	});
-	return await svg2png(svg, { scale });
+	return await optimizeImage({ image: svg as never, width: width * scale, height: height ? height * scale : undefined, format: 'png' });
 };
